@@ -1,0 +1,24 @@
+{
+  "name": "relay-grid",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-grade Webhook Relay & Observability Platform",
+  "scripts": {
+    "dev": "docker compose up -d && turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "migrate": "node packages/db/scripts/migrate.js"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.0"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}
