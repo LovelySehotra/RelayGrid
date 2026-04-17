@@ -1,6 +1,7 @@
 import Fastify from 'fastify';
 import helmet from '@fastify/helmet';
 import cors from '@fastify/cors';
+import { redisPlugin } from './plugins/redis.js';
 // import rateLimit from '@fastify/rate-limit';
 // import { env } from '@relay/config';
 
@@ -14,6 +15,7 @@ export async function createApp() {
 
   await fastify.register(helmet);
   await fastify.register(cors, { origin: true });
+    await fastify.register(redisPlugin);
   // await fastify.register(rateLimit, {
   //   redis: fastify.redis,
   //   global: false,

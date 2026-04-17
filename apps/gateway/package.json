@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-     "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,7 +14,10 @@
     "@fastify/cors": "^11.2.0",
     "@fastify/helmet": "^13.0.2",
     "@fastify/rate-limit": "^10.3.0",
-    "fastify": "^5.8.5"
+    "@relay/config": "workspace:*",
+    "fastify": "^5.8.5",
+    "fastify-plugin": "^5.1.0",
+    "ioredis": "^5.10.1"
   },
   "devDependencies": {
     "tsx": "^4.0.0"
