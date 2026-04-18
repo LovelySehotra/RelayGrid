@@ -1,4 +1,13 @@
 import { z } from 'zod';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env from project root (go up 3 levels from packages/config/src)
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 const envSchema = z.object({
   DATABASE_URL: z.string().url('DATABASE_URL must be a valid URL'),
@@ -16,7 +25,7 @@ const envSchema = z.object({
 });
 
 export type Env = z.infer<typeof envSchema>;
-
+console.log(process.env.DATABASE_URL);
 function parseEnv(): Env {
   try {
     return envSchema.parse(process.env);
