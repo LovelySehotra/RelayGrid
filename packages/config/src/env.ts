@@ -17,7 +17,7 @@ const envSchema = z.object({
   S3_ACCESS_KEY: z.string().min(1, 'S3_ACCESS_KEY is required'),
   S3_SECRET_KEY: z.string().min(1, 'S3_SECRET_KEY is required'),
   S3_REGION: z.string().min(1, 'S3_REGION is required'),
-  PORT: z.string().transform(Number).default('3000').pipe(
+  PORT: z.string().transform(Number).default(3000).pipe(
     z.number().int().positive().max(65535)
   ),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),

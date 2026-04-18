@@ -4,9 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "tsx watch src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1032.0",
+    "@relay/config": "workspace:*",
+    "@relay/db": "workspace:*",
+    "@relay/types": "workspace:*",
+    "bullmq": "^5.74.1",
+    "ioredis": "^5.10.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0"
+  }
 }

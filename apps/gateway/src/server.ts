@@ -6,15 +6,15 @@ import { postgresPlugin } from './plugins/postgres.js';
 import { ingestRoute } from './routes/ingest.js';
 import { eventsRoute } from './routes/events.js';
 import { authPlugin } from './plugins/auth.js';
-// import rateLimit from '@fastify/rate-limit';
-// import { env } from '@relay/config';
+import rateLimit from '@fastify/rate-limit';
+import { env } from '@relay/config';
 
 export async function createApp() {
   const fastify = Fastify({
-    // logger: {
-    //   level: env.LOG_LEVEL,
-    //   transport: env.NODE_ENV === 'development' ? { target: 'pino-pretty' } : undefined,
-    // },
+    logger: {
+      level: env.LOG_LEVEL,
+      transport: env.NODE_ENV === 'development' ? { target: 'pino-pretty' } : undefined,
+    },
   });
 
   await fastify.register(helmet);
@@ -22,10 +22,10 @@ export async function createApp() {
   await fastify.register(redisPlugin);
   await fastify.register(postgresPlugin);
   await fastify.register(authPlugin);
-  // await fastify.register(rateLimit, {
-  //   redis: fastify.redis,
-  //   global: false,]
-  // });
+  await fastify.register(rateLimit, {
+    redis: fastify.redis,
+    global: false,
+  });
   await fastify.register(ingestRoute, { prefix: '/in' });
   await fastify.register(eventsRoute, { prefix: '/events' });
   fastify.addHook('onRequest', async (request, reply) => {
