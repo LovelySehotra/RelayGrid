@@ -1,5 +1,5 @@
 {
-  "name": "@relay/config",
+  "name": "@relay/db",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -12,8 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.4.5",
-    "zod": "^4.3.6"
+    "@relay/config": "workspace:*",
+    "postgres": "^3.4.5"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
