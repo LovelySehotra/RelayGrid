@@ -1,7 +1,15 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'; 
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { TenantContext } from '@relay/types';
+
 export interface AppFastifyInstance extends FastifyInstance {
   sql: any;
   redis: any;
+}
+
+declare module 'fastify' {
+  interface FastifyRequest {
+    tenant?: TenantContext;
+  }
 }
  
 export interface IngestParams {
@@ -14,8 +22,6 @@ export interface IngestResponse {
 }
  
 export interface IngestRequest extends FastifyRequest<{ Params: IngestParams }> {
-  tenant?: {
-    tenantId: string;
-  };
+  tenant?: TenantContext;
   rawBody: Buffer;
 }

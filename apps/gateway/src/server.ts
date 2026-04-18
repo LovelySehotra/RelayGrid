@@ -3,6 +3,9 @@ import helmet from '@fastify/helmet';
 import cors from '@fastify/cors';
 import { redisPlugin } from './plugins/redis.js';
 import { postgresPlugin } from './plugins/postgres.js';
+import { ingestRoute } from './routes/ingest.js';
+import { eventsRoute } from './routes/events.js';
+import { authPlugin } from './plugins/auth.js';
 // import rateLimit from '@fastify/rate-limit';
 // import { env } from '@relay/config';
 
@@ -18,10 +21,13 @@ export async function createApp() {
   await fastify.register(cors, { origin: true });
   await fastify.register(redisPlugin);
   await fastify.register(postgresPlugin);
+  await fastify.register(authPlugin);
   // await fastify.register(rateLimit, {
   //   redis: fastify.redis,
-  //   global: false,
+  //   global: false,]
   // });
+  await fastify.register(ingestRoute, { prefix: '/in' });
+  await fastify.register(eventsRoute, { prefix: '/events' });
   fastify.addHook('onRequest', async (request, reply) => {
     request.log.info({ method: request.method, url: request.url }, 'incoming request');
   });

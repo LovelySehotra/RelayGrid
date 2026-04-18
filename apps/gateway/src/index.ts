@@ -1,4 +1,5 @@
 
+import { runMigrations } from "@relay/db";
 import { createApp } from "./server";
 
 const start = async () => {
