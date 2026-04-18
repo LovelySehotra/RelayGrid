@@ -25,7 +25,7 @@ const envSchema = z.object({
 });
 
 export type Env = z.infer<typeof envSchema>;
-console.log(process.env.DATABASE_URL);
+
 function parseEnv(): Env {
   try {
     return envSchema.parse(process.env);
