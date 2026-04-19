@@ -46,6 +46,10 @@ pnpm dev
 
 See [QUICKSTART.md](./QUICKSTART.md) for detailed setup instructions.
 
+## API Documentation
+
+For detailed API endpoint documentation, see [apps/gateway/API.md](./apps/gateway/API.md).
+
 ## Development
 
 ```bash
