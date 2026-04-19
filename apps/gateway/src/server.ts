@@ -8,6 +8,7 @@ import { eventsRoute } from './routes/events.js';
 import { authPlugin } from './plugins/auth.js';
 import rateLimit from '@fastify/rate-limit';
 import { env } from '@relay/config';
+import { healthRoute } from './routes/health.js';
 
 export async function createApp() {
   const fastify = Fastify({
@@ -28,6 +29,8 @@ export async function createApp() {
   });
   await fastify.register(ingestRoute, { prefix: '/in' });
   await fastify.register(eventsRoute, { prefix: '/events' });
+  await fastify.register(healthRoute);
+
   fastify.addHook('onRequest', async (request, reply) => {
     request.log.info({ method: request.method, url: request.url }, 'incoming request');
   });
