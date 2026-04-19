@@ -5,13 +5,40 @@ import { join } from 'path';
 
 let sqlInstance: postgres.Sql<any> | null = null;
 
+function parseDatabaseUrl(url: string): { host: string; port: number; database: string; username: string } {
+  try {
+    const parsed = new URL(url);
+    return {
+      host: parsed.hostname,
+      port: parseInt(parsed.port) || 5432,
+      database: parsed.pathname.slice(1),
+      username: parsed.username,
+    };
+  } catch (error) {
+    console.error('Failed to parse DATABASE_URL:', error);
+    return { host: 'unknown', port: 5432, database: 'unknown', username: 'unknown' };
+  }
+}
+
 export function sql(): postgres.Sql<any> {
   if (!sqlInstance) {
+    const dbConfig = parseDatabaseUrl(env.DATABASE_URL);
+    console.log(`🔌 Connecting to PostgreSQL:`);
+    console.log(`   Host: ${dbConfig.host}`);
+    console.log(`   Port: ${dbConfig.port}`);
+    console.log(`   Database: ${dbConfig.database}`);
+    console.log(`   Username: ${dbConfig.username}`);
+    
     sqlInstance = postgres(env.DATABASE_URL, {
       max: 10,
       idle_timeout: 20,
       connect_timeout: 10,
+      onnotice: (notice) => {
+        console.log(`📢 PostgreSQL Notice: ${notice.message}`);
+      },
     });
+
+    console.log(`✅ PostgreSQL connection established`);
   }
   return sqlInstance!;
 }
@@ -77,7 +104,9 @@ export async function runMigrations(): Promise<void> {
 
 export async function closeConnection(): Promise<void> {
   if (sqlInstance) {
+    console.log(`🔌 Closing PostgreSQL connection...`);
     await sqlInstance.end();
     sqlInstance = null;
+    console.log(`✅ PostgreSQL connection closed`);
   }
 }
