@@ -46,9 +46,13 @@ pnpm dev
 
 See [QUICKSTART.md](./QUICKSTART.md) for detailed setup instructions.
 
+## System Design & Architecture
+
+For a comprehensive architectural breakdown including data flows, BullMQ queues, and database schemas, see [SYSTEM_DESIGN.md](./SYSTEM_DESIGN.md).
+
 ## API Documentation
 
-For detailed API endpoint documentation, see [apps/gateway/API.md](./apps/gateway/API.md).
+For detailed API endpoint documentation (including Postman collections), see [apps/gateway/API.md](./apps/gateway/API.md).
 
 ## Development
 
