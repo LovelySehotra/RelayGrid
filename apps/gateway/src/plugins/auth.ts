@@ -15,6 +15,7 @@ export const authPlugin = fp(async (fastify) => {
     }
 
     const apiKey = request.headers['x-api-key'] as string;
+    console.log("api key here :", apiKey);
     if (!apiKey) {
       return reply.status(401).send({ error: 'invalid_key' });
     }

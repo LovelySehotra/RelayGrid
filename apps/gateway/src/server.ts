@@ -5,6 +5,7 @@ import { redisPlugin } from './plugins/redis.js';
 import { postgresPlugin } from './plugins/postgres.js';
 import { ingestRoute } from './routes/ingest.js';
 import { eventsRoute } from './routes/events.js';
+import { apiKeysRoute } from './routes/api-keys.js';
 import { authPlugin } from './plugins/auth.js';
 import rateLimit from '@fastify/rate-limit';
 import { env } from '@relay/config';
@@ -27,6 +28,7 @@ export async function createApp() {
     redis: fastify.redis,
     global: false,
   });
+  await fastify.register(apiKeysRoute, { prefix: '/api-keys' });
   await fastify.register(ingestRoute, { prefix: '/in' });
   await fastify.register(eventsRoute, { prefix: '/events' });
   await fastify.register(healthRoute);

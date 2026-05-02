@@ -30,9 +30,9 @@ function Endpoint({ method, path, title, description, headers, body, response }:
   return (
     <div className="card" style={{ marginBottom: 24 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-        <span style={{ 
-          background: methodBg[method], color: methodColors[method], 
-          padding: '4px 10px', borderRadius: 4, fontSize: 12, fontWeight: 800, fontFamily: 'JetBrains Mono, monospace' 
+        <span style={{
+          background: methodBg[method], color: methodColors[method],
+          padding: '4px 10px', borderRadius: 4, fontSize: 12, fontWeight: 800, fontFamily: 'JetBrains Mono, monospace'
         }}>
           {method}
         </span>
@@ -40,7 +40,7 @@ function Endpoint({ method, path, title, description, headers, body, response }:
       </div>
       <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{title}</h3>
       <p className="text-muted text-sm" style={{ marginBottom: 16, lineHeight: 1.5 }}>{description}</p>
-      
+
       {headers && (
         <div style={{ marginBottom: 16 }}>
           <div className="section-title">Headers</div>
@@ -78,9 +78,50 @@ export default function Docs() {
         </code>
       </div>
 
+      <div className="card mb-6" style={{ border: '1px solid var(--border)' }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>How to Create and Use API Keys</h2>
+        <p className="text-muted text-sm mb-4" style={{ lineHeight: 1.5 }}>
+          Follow these steps to generate and use your API keys securely. Your API keys grant full access to your tenant resources, so keep them safe!
+        </p>
+
+        <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 6, marginTop: 16 }}>1. Generate a new API Key</h3>
+        <p className="text-muted text-sm mb-2" style={{ lineHeight: 1.5 }}>
+          You can generate a new API key via the dashboard settings or programmatically via the API.
+        </p>
+        <Endpoint
+          method="POST" path="/api-keys"
+          title="Create API Key"
+          description="Generates a new API key. The plain-text key is returned only once. Ensure you save it securely."
+          response={`{\n  "id": "123e4567-e89b-12d3-a456-426614174000",\n  "apiKey": "relay_live_abc123def456ghi789",\n  "created_at": "2024-10-24T12:00:00Z"\n}`}
+        />
+
+        <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 6, marginTop: 16 }}>2. Add the API Key to Headers</h3>
+        <p className="text-muted text-sm mb-2" style={{ lineHeight: 1.5 }}>
+          For any subsequent API calls, include the <code>X-Api-Key</code> header.
+        </p>
+        <CodeBlock title="Example Request" code={`curl -X GET http://localhost:3000/events \\\n  -H "X-Api-Key: relay_live_abc123def456ghi789"`} />
+
+        <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 6, marginTop: 24 }}>3. List existing API Keys</h3>
+        <Endpoint
+          method="GET" path="/api-keys"
+          title="List API Keys"
+          description="Returns a list of all API keys for your tenant. The plain-text key is not returned, only the metadata and ID."
+          response={`{\n  "data": [\n    {\n      "id": "123e4567-e89b-12d3-a456-426614174000",\n      "revoked_at": null,\n      "grace_period_until": null,\n      "created_at": "2024-10-24T12:00:00Z"\n    }\n  ]\n}`}
+        />
+
+        <div style={{ background: 'var(--bg-hover)', padding: '12px 16px', borderRadius: 8, marginTop: 24 }}>
+          <h4 style={{ fontSize: 13, fontWeight: 700, marginBottom: 4, color: 'var(--orange)' }}>Security Best Practices</h4>
+          <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: 'var(--text-muted)' }}>
+            <li style={{ marginBottom: 4 }}>Never commit your API keys to version control (e.g. GitHub).</li>
+            <li style={{ marginBottom: 4 }}>Store keys securely in environment variables or a secret manager.</li>
+            <li style={{ marginBottom: 4 }}>If a key is compromised, immediately revoke it and generate a new one.</li>
+          </ul>
+        </div>
+      </div>
+
       <h2 style={{ fontSize: 20, fontWeight: 800, marginTop: 40, marginBottom: 16, paddingBottom: 8, borderBottom: '1px solid var(--border)' }}>1. Webhook Ingestion</h2>
-      <Endpoint 
-        method="POST" path="/in/:sourceSlug" 
+      <Endpoint
+        method="POST" path="/in/:sourceSlug"
         title="Ingest Webhook Event"
         description="Accepts incoming webhooks from configured sources (Stripe, GitHub, Twilio, Generic). Verifies the signature and enqueues the payload for delivery."
         headers={[
@@ -93,19 +134,19 @@ export default function Docs() {
       />
 
       <h2 style={{ fontSize: 20, fontWeight: 800, marginTop: 40, marginBottom: 16, paddingBottom: 8, borderBottom: '1px solid var(--border)' }}>2. Events Module</h2>
-      <Endpoint 
-        method="GET" path="/events" 
+      <Endpoint
+        method="GET" path="/events"
         title="List Events"
         description="Retrieves a paginated list of webhook events. Supports filtering by status and source_type."
         response={`{\n  "data": [\n    {\n      "id": "evt_01HZ3M...",\n      "source_type": "stripe",\n      "status": "delivered",\n      "received_at": "2024-10-24T12:00:00Z"\n    }\n  ],\n  "next_cursor": "2024-10-24T12:00:00Z,evt_01HZ..."\n}`}
       />
-      <Endpoint 
-        method="GET" path="/events/:id" 
+      <Endpoint
+        method="GET" path="/events/:id"
         title="Get Event Details"
         description="Retrieves metadata and delivery attempts for a specific event."
       />
-      <Endpoint 
-        method="POST" path="/events/:id/replay" 
+      <Endpoint
+        method="POST" path="/events/:id/replay"
         title="Replay Event"
         description="Manually requeues a specific event for delivery."
         response={`{\n  "queued": true\n}`}
@@ -113,8 +154,8 @@ export default function Docs() {
 
       <h2 style={{ fontSize: 20, fontWeight: 800, marginTop: 40, marginBottom: 16, paddingBottom: 8, borderBottom: '1px solid var(--border)' }}>3. Configuration</h2>
       <Endpoint method="GET" path="/events/sources" title="List Sources" description="Returns all configured webhook ingestion sources." />
-      <Endpoint 
-        method="POST" path="/events/sources" 
+      <Endpoint
+        method="POST" path="/events/sources"
         title="Create Source"
         description="Create a new webhook ingestion source."
         body={`{\n  "slug": "my-stripe",\n  "source_type": "stripe",\n  "signing_secret": "whsec_..."\n}`}
@@ -122,29 +163,29 @@ export default function Docs() {
       <Endpoint method="DELETE" path="/events/sources/:id" title="Delete Source" description="Removes a source configuration." />
 
       <Endpoint method="GET" path="/events/destinations" title="List Destinations" description="Returns all configured webhook delivery destinations." />
-      <Endpoint 
-        method="POST" path="/events/destinations" 
+      <Endpoint
+        method="POST" path="/events/destinations"
         title="Create Destination"
         description="Create a new webhook delivery destination."
         body={`{\n  "url": "https://api.my-app.com/webhooks",\n  "label": "Production API",\n  "timeout_ms": 10000\n}`}
       />
       <Endpoint method="DELETE" path="/events/destinations/:id" title="Delete Destination" description="Removes a destination configuration." />
       <h2 style={{ fontSize: 20, fontWeight: 800, marginTop: 40, marginBottom: 16, paddingBottom: 8, borderBottom: '1px solid var(--border)' }}>4. Observability</h2>
-      <Endpoint 
-        method="GET" path="/events/metrics/summary" 
+      <Endpoint
+        method="GET" path="/events/metrics/summary"
         title="Get Metrics Summary"
         description="Returns KPIs for the dashboard overview."
         response={`{\n  "total_events_24h": 1284092,\n  "delivered_24h": 1260858,\n  "failed_24h": 23234,\n  "queue_depth": 0,\n  "dlq_depth": 3,\n  "avg_latency_ms": 142\n}`}
       />
 
-      <Endpoint 
-        method="GET" path="/health" 
+      <Endpoint
+        method="GET" path="/health"
         title="Health Check"
         description="Public endpoint to check system health."
         response={`{\n  "status": "ok",\n  "uptime": 1205,\n  "version": "1.0.0"\n}`}
       />
-      <Endpoint 
-        method="GET" path="/metrics" 
+      <Endpoint
+        method="GET" path="/metrics"
         title="Prometheus Metrics"
         description="Public endpoint exposing Prometheus-compatible metrics."
       />

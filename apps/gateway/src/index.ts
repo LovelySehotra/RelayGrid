@@ -4,18 +4,18 @@ import { createApp } from "./server";
 
 const start = async () => {
   try {
-    // await runMigrations();
+    await runMigrations();
     console.log('✓ Migrations applied');
 
     const app = await createApp();
 
-    const address = await app.listen({ port: 3002 ,host: '0.0.0.0' });
+    const address = await app.listen({ port: 3000, host: '0.0.0.0' });
     console.log(`🚀 Gateway listening on ${address}`);
 
     const gracefulShutdown = async (signal: string) => {
       console.log(`\n${signal} received, shutting down gracefully...`);
       await app.close();
-    //   await closeConnection();
+      // await closeConnection(); // This is not imported, let's leave it commented or import it if needed. Actually it's probably not needed for graceful shutdown if Fastify plugin handles it.
       console.log('✓ Shutdown complete');
       process.exit(0);
     };
