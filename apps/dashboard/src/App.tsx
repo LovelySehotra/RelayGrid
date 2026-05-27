@@ -11,6 +11,8 @@ import Sources from './pages/Sources';
 import Destinations from './pages/Destinations';
 import Settings from './pages/Settings';
 import Docs from './pages/Docs';
+import TestDashboard from './pages/TestDashboard';
+
 
 const qc = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 20_000 } },
@@ -32,7 +34,9 @@ export default function App() {
                 <Route path="/destinations" element={<Destinations />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/docs" element={<Docs />} />
+                <Route path="/test" element={<TestDashboard />} />
               </Route>
+
             </Routes>
           </BrowserRouter>
         </ToastProvider>

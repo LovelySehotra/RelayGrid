@@ -6,6 +6,7 @@ const NAV = [
   { to: '/events', label: 'Events Log', icon: List },
   { to: '/sources', label: 'Sources', icon: Radio },
   { to: '/destinations', label: 'Destinations', icon: Globe },
+  { to: '/test', label: 'Test Center', icon: Zap },
   { to: '/settings', label: 'Settings', icon: Settings },
 ];
 
