@@ -10,6 +10,8 @@ import { authPlugin } from './plugins/auth.js';
 import rateLimit from '@fastify/rate-limit';
 import { env } from '@relay/config';
 import { healthRoute } from './routes/health.js';
+import { authRoute } from './routes/auth.js';
+
 
 export async function createApp() {
   const fastify = Fastify({
@@ -29,6 +31,7 @@ export async function createApp() {
     global: false,
   });
   await fastify.register(apiKeysRoute, { prefix: '/api-keys' });
+  // await fastify.register(authRoute, { prefix: '/auth' });
   await fastify.register(ingestRoute, { prefix: '/in' });
   await fastify.register(eventsRoute, { prefix: '/events' });
   await fastify.register(healthRoute);
