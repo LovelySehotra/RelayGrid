@@ -1,7 +1,11 @@
 import postgres from 'postgres';
 import { env } from '@relay/config';
 import { readFileSync, readdirSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 let sqlInstance: postgres.Sql<any> | null = null;
 
@@ -93,7 +97,7 @@ export async function runMigrations(): Promise<void> {
 
     try {
       await client.unsafe(sqlContent);
-      await client`INSERT INTO _migrations (filename) VALUES ${client(file)}`;
+      await client`INSERT INTO _migrations (filename) VALUES (${file})`;
       console.log(`✓ Applied ${file}`);
     } catch (error) {
       console.error(`✗ Failed to apply ${file}:`, error);

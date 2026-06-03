@@ -1,6 +1,7 @@
 
 import { runMigrations } from "@relay/db";
-import { createApp } from "./server";
+import { createApp } from "./server.js";
+import { env } from "@relay/config";
 
 const start = async () => {
   try {
@@ -9,7 +10,7 @@ const start = async () => {
 
     const app = await createApp();
 
-    const address = await app.listen({ port: 3000, host: '0.0.0.0' });
+    const address = await app.listen({ port: env.PORT, host: '0.0.0.0' });
     console.log(`🚀 Gateway listening on ${address}`);
 
     const gracefulShutdown = async (signal: string) => {

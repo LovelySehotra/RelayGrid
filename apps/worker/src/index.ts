@@ -7,17 +7,17 @@ import { dlqWorker } from './workers/dlq.js';
 
 const start = async () => {
   try {
-    // await runMigrations();
+    await runMigrations();
     console.log('✓ Migrations applied');
 
     const workerRegistry = new WorkerRegistry();
-    // await workerRegistry.start();
+    await workerRegistry.start();
 
     // Start schema inference worker
-    // await schemaWorker.run();
+    await schemaWorker.run();
 
     // Start DLQ monitor
-    // await dlqWorker.run();
+    await dlqWorker.run();
 
     console.log('🚀 Worker started');
 
@@ -26,7 +26,7 @@ const start = async () => {
       await workerRegistry.stop();
       await schemaWorker.close();
       await dlqWorker.close();
-    //   await closeConnection();
+      await closeConnection();
       console.log('✓ Shutdown complete');
       process.exit(0);
     };

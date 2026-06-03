@@ -10,7 +10,11 @@ declare module 'fastify' {
 
 export const authPlugin = fp(async (fastify) => {
   fastify.addHook('onRequest', async (request, reply) => {
-    if (request.url === '/health' || request.url === '/metrics') {
+    if (
+      request.url === '/health' ||
+      request.url === '/metrics' ||
+      (request.url.startsWith('/in/') && !request.headers['x-api-key'])
+    ) {
       return;
     }
 

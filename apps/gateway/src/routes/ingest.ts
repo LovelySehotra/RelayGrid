@@ -1,4 +1,4 @@
-import fp from 'fastify-plugin';
+import { FastifyPluginAsync } from 'fastify';
 import { ulid } from 'ulid';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Queue } from 'bullmq';
@@ -17,7 +17,7 @@ const s3Client = new S3Client({
   forcePathStyle: true,
 });
 
-export const ingestRoute = fp(async (fastify) => {
+export const ingestRoute: FastifyPluginAsync = async (fastify) => {
   const app = fastify as FastifyInstance;
   app.post(
     '/:sourceSlug',
@@ -56,33 +56,69 @@ export const ingestRoute = fp(async (fastify) => {
     async (request, reply) => {
       const req = request as IngestRequest;
       const { sourceSlug } = req.params;
-      const tenantId = req.tenant!.tenantId;
       const rawBody = req.rawBody;
 
-      // Look up source
-      const source = await app.sql`
-        SELECT id, source_type, signing_secret
-        FROM sources
-        WHERE tenant_id = ${tenantId} AND slug = ${sourceSlug}
-        LIMIT 1
-      `;
+      let tenantId: string;
+      let sourceData: any;
 
-      if (source.length === 0) {
-        return reply.status(404).send({ error: 'source_not_found' });
-      }
+      if (req.tenant) {
+        tenantId = req.tenant.tenantId;
+        const source = await app.sql`
+          SELECT id, source_type, signing_secret
+          FROM sources
+          WHERE tenant_id = ${tenantId} AND slug = ${sourceSlug}
+          LIMIT 1
+        `;
 
-      const sourceData = source[0];
+        if (source.length === 0) {
+          return reply.status(404).send({ error: 'source_not_found' });
+        }
 
-      // Verify signature
-      const isValid = verifySignature(
-        sourceData.source_type,
-        rawBody,
-        request.headers as Record<string, string>,
-        sourceData.signing_secret
-      );
+        sourceData = source[0];
 
-      if (!isValid) {
-        return reply.status(401).send({ error: 'invalid_signature' });
+        // Verify signature
+        const isValid = verifySignature(
+          sourceData.source_type,
+          rawBody,
+          request.headers as Record<string, string>,
+          sourceData.signing_secret
+        );
+
+        if (!isValid) {
+          return reply.status(401).send({ error: 'invalid_signature' });
+        }
+      } else {
+        // Look up all matching sources by slug
+        const sources = await app.sql`
+          SELECT id, tenant_id, source_type, signing_secret
+          FROM sources
+          WHERE slug = ${sourceSlug}
+        `;
+
+        if (sources.length === 0) {
+          return reply.status(404).send({ error: 'source_not_found' });
+        }
+
+        let matchedSource = null;
+        for (const s of sources) {
+          const isValid = verifySignature(
+            s.source_type,
+            rawBody,
+            request.headers as Record<string, string>,
+            s.signing_secret
+          );
+          if (isValid) {
+            matchedSource = s;
+            break;
+          }
+        }
+
+        if (!matchedSource) {
+          return reply.status(401).send({ error: 'invalid_signature' });
+        }
+
+        sourceData = matchedSource;
+        tenantId = matchedSource.tenant_id;
       }
 
       const eventId = ulid();
@@ -164,4 +200,4 @@ export const ingestRoute = fp(async (fastify) => {
       return { id: eventId, status: 'queued' };
     }
   );
-});
+};

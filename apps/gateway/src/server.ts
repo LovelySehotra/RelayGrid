@@ -11,6 +11,7 @@ import rateLimit from '@fastify/rate-limit';
 import { env } from '@relay/config';
 import { healthRoute } from './routes/health.js';
 import { authRoute } from './routes/auth.js';
+import { Readable } from 'stream';
 
 
 export async function createApp() {
@@ -19,6 +20,24 @@ export async function createApp() {
       level: env.LOG_LEVEL,
       transport: env.NODE_ENV === 'development' ? { target: 'pino-pretty' } : undefined,
     },
+  });
+
+  // Capture raw body for webhook signature verification on ingestion endpoints
+  fastify.addHook('preParsing', async (request, reply, payload) => {
+    if (!request.url.startsWith('/in/')) {
+      return payload;
+    }
+    const chunks: Buffer[] = [];
+    for await (const chunk of payload) {
+      chunks.push(chunk as Buffer);
+    }
+    const buffer = Buffer.concat(chunks);
+    (request as any).rawBody = buffer;
+
+    const stream = new Readable();
+    stream.push(buffer);
+    stream.push(null);
+    return stream;
   });
 
   await fastify.register(helmet);
@@ -31,7 +50,7 @@ export async function createApp() {
     global: false,
   });
   await fastify.register(apiKeysRoute, { prefix: '/api-keys' });
-  // await fastify.register(authRoute, { prefix: '/auth' });
+  await fastify.register(authRoute, { prefix: '/auth' });
   await fastify.register(ingestRoute, { prefix: '/in' });
   await fastify.register(eventsRoute, { prefix: '/events' });
   await fastify.register(healthRoute);

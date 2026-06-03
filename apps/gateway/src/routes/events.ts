@@ -1,8 +1,8 @@
-import fp from 'fastify-plugin';
+import { FastifyPluginAsync } from 'fastify';
 import { Queue } from 'bullmq';
 import { withTenant } from '@relay/db';
 
-export const eventsRoute = fp(async (fastify) => {
+export const eventsRoute: FastifyPluginAsync = async (fastify) => {
   fastify.get('/', async (request, reply) => {
     const tenantId = request.tenant!.tenantId;
     const limit = (request.query as any).limit ? parseInt((request.query as any).limit) : 50;
@@ -297,4 +297,4 @@ export const eventsRoute = fp(async (fastify) => {
       avg_latency_ms: avgLatency[0].avg ? Math.round(avgLatency[0].avg) : 0,
     };
   });
-});
+};
