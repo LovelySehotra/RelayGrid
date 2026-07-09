@@ -11,6 +11,7 @@ import rateLimit from '@fastify/rate-limit';
 import { env } from '@relay/config';
 import { healthRoute } from './routes/health.js';
 import { authRoute } from './routes/auth.js';
+import { demoRoute } from './routes/demo.js';
 import { Readable } from 'stream';
 
 
@@ -54,6 +55,10 @@ export async function createApp() {
   await fastify.register(ingestRoute, { prefix: '/in' });
   await fastify.register(eventsRoute, { prefix: '/events' });
   await fastify.register(healthRoute);
+
+  if (env.NODE_ENV === 'development') {
+    await fastify.register(demoRoute, { prefix: '/demo' });
+  }
 
   fastify.addHook('onRequest', async (request, reply) => {
     request.log.info({ method: request.method, url: request.url }, 'incoming request');

@@ -9,7 +9,8 @@
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
-    "migrate": "node packages/db/scripts/migrate.js"
+    "migrate": "node packages/db/scripts/migrate.js",
+     "start": "pnpm --filter api start"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",

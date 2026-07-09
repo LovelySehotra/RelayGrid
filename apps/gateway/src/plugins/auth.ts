@@ -1,6 +1,7 @@
 import fp from 'fastify-plugin';
 import { createHash } from 'crypto';
 import type { TenantContext } from '@relay/types';
+import { env } from '@relay/config';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -22,6 +23,18 @@ export const authPlugin = fp(async (fastify) => {
     console.log("api key here :", apiKey);
     if (!apiKey) {
       return reply.status(401).send({ error: 'invalid_key' });
+    }
+
+    // Handle dev environment with DEV_API_KEY from environment
+    if (env.NODE_ENV === 'development' && env.DEV_API_KEY && apiKey === env.DEV_API_KEY) {
+      const tenantContext: TenantContext = {
+        tenantId: '00000000-0000-0000-0000-000000000000',
+        slug: 'dev-tenant',
+        plan: 'developer',
+        rateLimitRps: 100,
+      };
+      request.tenant = tenantContext;
+      return;
     }
 
     const keyHash = createHash('sha256').update(apiKey).digest('hex');
